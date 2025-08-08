@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import plotly.graph_objects as go
 
-img = Image.open("cat.jepg").convert("RGB").resize((50, 50))
+img = Image.open("cat.jpeg").convert("RGB").resize((50, 50))
 data = np.array(img)
 h, w, _ = data.shape
 yy, xx = np.mgrid[0:h, 0:w]
