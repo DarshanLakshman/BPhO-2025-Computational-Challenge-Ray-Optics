@@ -5,7 +5,7 @@ from PIL import Image
 import plotly.graph_objects as go
 
 def challenge_5_code(offset_x, offset_y, step=10):
-    img = Image.open("test.jpg").convert("RGB").resize((50, 50))
+    img = Image.open("cat.jpeg").convert("RGB").resize((50, 50))
     data = np.array(img)
     h, w, d = data.shape
 
