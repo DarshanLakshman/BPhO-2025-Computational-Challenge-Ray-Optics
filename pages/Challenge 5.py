@@ -4,91 +4,82 @@ import numpy as np
 from PIL import Image
 import plotly.graph_objects as go
 
-# Constants
-step = 10
-margin_from_axis = 10
+def challenge_5_code(offset_x, offset_y, step=10):
+    img = Image.open("cat.jpeg").convert("RGB").resize((50, 50))
+    data = np.array(img)
+    h, w, d = data.shape
 
-# Load and preprocess image once
-img = Image.open("cat.jpeg").convert("RGB").resize((50, 50))
-data = np.array(img)  # (h, w, 3)
-h, w, _ = data.shape
+    # Bottom-left corner of original image at x = 10
+    initial_x_offset = 10
 
-# Precompute coordinates and color strings once
-yy, xx = np.mgrid[0:h, 0:w]
-xs_base = xx.flatten()
-ys_base = h - yy.flatten()  # invert y for display
-colors = data.reshape(-1, 3)
-color_strings = np.char.add('rgb(', np.char.add(colors[:, 0].astype(str), 
-                    np.char.add(',', np.char.add(colors[:, 1].astype(str), 
-                    np.char.add(',', np.char.add(colors[:, 2].astype(str), ')'))))))
+    yy, xx = np.mgrid[0:h, 0:w]
+    xs = xx.flatten()
+    ys = yy.flatten()
 
-# Figure generation function (fast)
-def create_figure(offset_x, offset_y):
-    shift_x = offset_x * step + margin_from_axis
-    shift_y = offset_y * step
+    # Flip y axis so bottom-left is (0,0)
+    ys = h - ys
 
-    xs_shifted = xs_base + shift_x
-    ys_shifted = ys_base + shift_y
+    colors = data.reshape(-1, 3)
+    color_strings = [f'rgb({r},{g},{b})' for r, g, b in colors]
+
+    xs_trans = xs + initial_x_offset + offset_x * step
+    ys_trans = ys + offset_y * step
+
+    # Reflection about x=0: reflected_x = -original_x
+    xs_reflected = -xs_trans
+    ys_reflected = ys_trans
 
     fig = go.Figure()
 
-    # Mirror line
-    fig.add_trace(go.Scattergl(
-        x=[0, 0], y=[-200, 200],
+    # Mirror line at x=0
+    fig.add_trace(go.Scatter(
+        x=[0, 0],
+        y=[-100, 100],
         mode='lines',
         line=dict(color='gray', dash='dash'),
-        hoverinfo='skip',
-        showlegend=False
+        name='Mirror Line'
     ))
 
-    # Original image points
+    # Original image
     fig.add_trace(go.Scattergl(
-        x=xs_shifted,
-        y=ys_shifted,
+        x=xs_trans,
+        y=ys_trans,
         mode='markers',
-        marker=dict(color=color_strings, size=5),
-        hoverinfo='skip',
-        showlegend=False
+        marker=dict(color=color_strings, size=4, opacity=1),
+        name='Original Image'
     ))
 
-    # Reflected image points
+    # Reflected image
     fig.add_trace(go.Scattergl(
-        x=-xs_shifted,
-        y=ys_shifted,
+        x=xs_reflected,
+        y=ys_reflected,
         mode='markers',
-        marker=dict(color=color_strings, size=2),
-        hoverinfo='skip',
-        showlegend=False
+        marker=dict(color=color_strings, size=4, opacity=1),
+        name='Reflected Image'
     ))
 
     fig.update_layout(
-        xaxis=dict(scaleanchor="y", visible=False),
-        yaxis=dict(visible=False),
-        margin=dict(l=0, r=0, t=0, b=0),
-        dragmode=False
+        xaxis=dict(scaleanchor="y"),
+        margin=dict(l=0, r=0, t=0, b=0)
     )
 
     return fig
 
-# Dash Page Registration
-dash.register_page(__name__, path='/challenge5', name="Challenge 5", order=5)
+dash.register_page(__name__, path='/challange5', name="Challenge 5", order=5)
 
-# Layout
 layout = html.Div([
     html.Div([
         html.Button('up', id='up-nclicks', n_clicks=0),
         html.Button('down', id='down-nclicks', n_clicks=0),
         html.Button('left', id='left-nclicks', n_clicks=0),
         html.Button('right', id='right-nclicks', n_clicks=0),
-    ]),
+    ], style={'marginBottom': '20px'}),
     html.Div([
         html.H1("Challenge 5 - Plane Mirror Reflection"),
-        html.Br(),
-        dcc.Graph(id="mirror", config={"displayModeBar": False})
+        dcc.Graph(id="mirror")
     ])
 ])
 
-# Callback
 @dash.callback(
     Output('mirror', 'figure'),
     Input('up-nclicks', 'n_clicks'),
@@ -97,4 +88,6 @@ layout = html.Div([
     Input('right-nclicks', 'n_clicks')
 )
 def update_figure(u, d, l, r):
-    return create_figure(r - l, u - d)
+    offset_y = u - d
+    offset_x = r - l
+    return challenge_5_code(offset_x, offset_y)
