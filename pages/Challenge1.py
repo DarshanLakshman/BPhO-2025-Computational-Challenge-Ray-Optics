@@ -18,7 +18,6 @@ def challenge_1a_graph():
 
     n_values = np.sqrt(1 + y)
 
-    # Plot
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=wavelengths, y=n_values, mode='lines', name='n(λ)'))
     fig.update_layout(
