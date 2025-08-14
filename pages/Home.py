@@ -9,7 +9,7 @@ layout = html.Div(
             children=[
                 html.H1("BPhO Computational Challenge 2025 - Ray Optics"),
                 html.Br(),
-                html.H2("By Darshan and Akshith")
+                html.H2("By Darshan Lakshman and Akshith Arvind")
             ],
             style={"marginBottom": "20px"}
         ),
