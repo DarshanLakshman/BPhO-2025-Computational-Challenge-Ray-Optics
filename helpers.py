@@ -1,3 +1,5 @@
+# usage of linear interpolation to create smooth colour map
+
 def get_colour(f):
     f = f / (10 ** 12)
     if f < 405:
