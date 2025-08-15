@@ -25,7 +25,7 @@ def challenge_2_graph():
     fig.add_scatter(x=x_vals, 
                     y=y_fit, 
                     mode='lines', 
-                    name=f'Line of Best Fit <br> Gradient = {m:3f} <br> => Veracity = {1/m:3f}')
+                    name=f'Line of Best Fit <br> Gradient = {m:3f} <br> => Veracity = {1/c:3f}')
     
 
     return fig
